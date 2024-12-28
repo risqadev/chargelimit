@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ### Set the battery charge limit
-### Author: Ricardo Camacho <camacho.rc@gmail.com>
+### Author: Ricardo Camacho <risqadev@gmail.com>
 ### Date: 4 nov. 2021
 
 #rule_file="./99-charging-threshold.rules"
