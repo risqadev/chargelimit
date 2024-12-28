@@ -1,0 +1,52 @@
+#!/bin/sh
+
+### Set the battery charge limit
+### Author: Ricardo Camacho <camacho.rc@gmail.com>
+### Date: 4 nov. 2021
+
+#rule_file="./99-charging-threshold.rules"
+rule_file="/etc/udev/rules.d/99-charging-threshold.rules"
+rule_line="KERNEL==\"BAT0\", SUBSYSTEM==\"power_supply\", ATTR{charge_control_end_threshold}=\"$1\""
+
+help_msg="\
+Usage: $0 VALUE or COMMAND
+
+Value:
+  Between 50 an 100
+
+Commands:
+  get     print the currently limit
+  reload  force reload
+  --help  print this command list\n"
+  
+case $1 in
+    [0-9]*)
+        if [ $1 -ge 50 ] && [ $1 -le 100 ]; then
+          # echo "setting to $1"
+          echo "$rule_line" > "$rule_file"
+          /usr/bin/udevadm control --reload
+          /usr/bin/udevadm trigger -s power_supply
+        else
+          echo "Value out of range. Use $0 --help"
+        fi
+    ;;
+    reload)
+        #echo "reloading..."
+        /usr/bin/udevadm control --reload
+        /usr/bin/udevadm trigger -s power_supply
+    ;;
+    get)
+        #echo "getting..."
+        cat /sys/class/power_supply/BAT0/charge_control_end_threshold
+    ;;
+    --help)
+        printf "$help_msg"
+    ;;
+    *)
+        if [ -z $1 ]; then
+          echo "Missing argument. Use $0 --help"
+        else
+          echo "Invalid argument. Use $0 --help"
+        fi
+    ;;
+esac
